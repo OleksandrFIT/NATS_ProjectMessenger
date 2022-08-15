@@ -1,0 +1,128 @@
+syntax = "proto3";
+package com.example.reactiveproject;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+//============================================================================================
+//Request
+message UserDescription{
+
+  string name = 1;
+  string phoneNumber = 2;
+  string bio = 3;
+  repeated ChatDescription chat = 4;
+  repeated MessageDescription message = 5;
+}
+
+message id{
+  string id = 1;
+}
+message name{
+  string name = 2;
+}
+message phoneNumber{
+  string phoneNumber = 3;
+}
+message UserUpdateRequest{
+  string userId = 1;
+  UserDescription user = 2;
+}
+
+//Answer
+message UserResponse{
+  string id = 1;
+  string name = 2;
+  string phoneNumber = 3;
+  string bio = 4;
+  repeated ChatDescription chat = 5;
+  repeated MessageDescription message = 6;
+}
+//============================================================================================
+//Request
+message MessageDescription{
+  string text = 1;
+  string messageChatId = 2;
+  string messageUserId = 3;
+}
+message text{
+  string text = 3;
+}
+message MessageUpdateDescription{
+  string text = 1;
+}
+
+message MessageUpdateRequest{
+  string messageId = 1;
+  MessageUpdateDescription message = 2;
+}
+
+//Answer
+message MessageResponse{
+  string id = 1;
+  google.protobuf.Timestamp dateTime = 2;
+  string text = 3;
+  string messageChatId = 4;
+  string messageUserId = 5;
+}
+
+//============================================================================================
+//Request
+message ChatDescription{
+  string name = 1;
+  repeated string messageIds =2;
+  repeated string userIds = 3;
+}
+
+message ChatUpdateRequest{
+  string chatId = 1;
+  string userId = 2;
+}
+
+//Answer
+message ChatResponse{
+  string id = 1;
+  string name = 2;
+  repeated string messageIds =3;
+  repeated string userIds = 4;
+}
+
+//============================================================================================
+//Answer
+message FullChatResponse{
+  ChatDescription chat = 1;
+  repeated UserDescription userList = 2;
+  repeated MessageDescription messageList = 3;
+}
+
+message Empty{
+
+}
+
+message DeleteAnswer{
+  string text = 1;
+}
+//============================================================================================
+service UserService{
+  rpc findUserById(id) returns (UserResponse);
+  rpc findUserByUserName(name) returns (UserResponse);
+  rpc findUserByPhoneNumber(phoneNumber) returns (UserResponse);
+  rpc createUser(UserDescription) returns (UserResponse);
+  rpc deleteUser(id) returns (DeleteAnswer);
+  rpc updateUser(UserUpdateRequest) returns (UserResponse);
+}
+
+service MessageService{
+  rpc findMessage(text) returns (stream MessageResponse);
+  rpc sendMessage(MessageDescription) returns (MessageResponse);
+  rpc deleteMessage(id) returns (DeleteAnswer);
+  rpc editMessage(MessageUpdateRequest) returns (MessageResponse);
+}
+
+service ChatService{
+  rpc findAllChats(google.protobuf.Empty) returns (stream ChatResponse);
+  rpc createChat(ChatDescription) returns (ChatResponse);
+  rpc deleteChat(id) returns (DeleteAnswer);
+  rpc addUserToTheChat(ChatUpdateRequest) returns (ChatResponse);
+  rpc deleteUserFromChat(ChatUpdateRequest) returns (ChatResponse);
+  rpc getChatById(id) returns (FullChatResponse);
+}
