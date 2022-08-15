@@ -15,9 +15,7 @@ fun textToGrpc(grpcText: Mono<Services.text>): Mono<String>{
     }
 }
 fun textToGrpcUnMono(grpcText: Mono<Services.text>): String{
-    return grpcText.map {
-        it.text
-    }.toString()
+    return grpcText.block()!!.text.toString()
 }
 
 

@@ -27,20 +27,19 @@ class GrpcMessageService: ReactorMessageServiceGrpc.MessageServiceImplBase(){
 
     override fun findMessage(request: Mono<Services.text>?): Flux<Services.MessageResponse> {
 
-//        val fluxSink = Flux.create { hot: FluxSink<Message> ->
-//            natsConnection.createDispatcher().subscribe("message-event") { message ->
-//                val messages = Services.MessageResponse
-//                    .parseFrom(message.data)
-//                hot.next(grpcToMessageUnMono(messages))
-//            }
-//        }
-//
-//        return Flux.merge(messageService.findMessage(textToGrpcUnMono(request!!)), fluxSink).map {
-//            messageToGrpcUnMono(it!!)
-//        }
+        val fluxSink = Flux.create { hot: FluxSink<Message> ->
+            natsConnection.createDispatcher().subscribe("message-event") { message ->
+                val messages = Services.MessageResponse
+                    .parseFrom(message.data)
+                hot.next(grpcToMessageUnMono(messages))
+            }
+        }
 
-        return textToGrpc(request!!)
-            .flatMapMany { messageToGrpc(messageService.findMessage(it)) }
+        return Flux.merge(messageService.findMessage(textToGrpcUnMono(request!!)), fluxSink).map {
+            messageToGrpcUnMono(it!!)
+        }
+//        return textToGrpc(request!!)
+//            .flatMapMany { messageToGrpc(messageService.findMessage(it)) }
     }
 
     override fun sendMessage(request: Mono<Services.MessageDescription>?): Mono<Services.MessageResponse> {
