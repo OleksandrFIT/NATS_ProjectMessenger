@@ -14,6 +14,11 @@ fun textToGrpc(grpcText: Mono<Services.text>): Mono<String>{
         it.text.toString()
     }
 }
+
+fun monoToFlux(message: Message): Flux<Message>{
+    return Flux.from(Mono.just(message))
+}
+
 fun textToGrpcUnMono(grpcText: Mono<Services.text>): String{
     return grpcText.block()!!.text.toString()
 }

@@ -135,7 +135,23 @@ fun grpcToUser(grpcUser: Mono<Services.UserDescription>): Mono<User> {
             )
         }
 }
+fun grpcResponseToUser(grpcUser: Mono<Services.UserResponse>): Mono<User> {
 
+    return grpcUser.map {
+        User(
+            id = it.id,
+            name = it.name,
+            phoneNumber = it.name,
+            bio = it.bio,
+            chat = it.chatList.map {
+                grpcToChatUnMono(it)
+            },
+            message = it.messageList.map {
+                grpcToMessageUnMono(it)
+            }
+        )
+    }
+}
 fun updateGrpcToUser(request: Mono<Services.UserUpdateRequest>?): Mono<Pair<String, User>>{
     return request!!.map {
         it!!.userId.toString() to User(

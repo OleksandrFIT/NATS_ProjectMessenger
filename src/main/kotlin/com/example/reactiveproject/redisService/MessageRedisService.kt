@@ -1,17 +1,16 @@
-package com.example.reactiveproject.service
+package com.example.reactiveproject.redisService
 
 import com.example.reactiveproject.model.Message
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 
-interface MessageService {
+interface MessageRedisService {
 
     fun sendMessage(message: Message): Mono<Message>
 
     fun deleteMessage(messageId: String): Mono<Void>
 
-    fun editMessage(messageId: String, message: Message): Mono<Message>
+    fun editMessage(id: String, message: Message): Mono<Message>
 
-    fun findMessage(text: String): Flux<Message?>
-
+    //fun findMessage(text: String): Flux<Message?>
 }

@@ -2,6 +2,7 @@ package com.example.reactiveproject.service.impl
 
 import com.example.reactiveproject.helper.messageToGrpcUnMono
 import com.example.reactiveproject.model.Message
+import com.example.reactiveproject.redisService.MessageRedisService
 import com.example.reactiveproject.repository.MessageRepository
 import com.example.reactiveproject.service.MessageService
 import io.nats.client.Connection
@@ -17,7 +18,8 @@ import java.time.LocalDateTime
 @Service
 class MessageServiceImpl(
     @Autowired
-    val messageRepository: MessageRepository
+    val messageRepository: MessageRepository,
+    val messageRedisService: MessageRedisService
 ) : MessageService {
 
     @Autowired
@@ -31,13 +33,16 @@ class MessageServiceImpl(
             messageUserId = message.messageUserId,
             datetime = LocalDateTime.now().toString()
         )
-        return messageRepository.save(messageSend).doOnSuccess {
+        return messageRepository.save(messageSend)
+            .flatMap { messageRedisService.sendMessage(it) }
+            .doOnSuccess {
             natsConnector.publish("message-event", messageToGrpcUnMono(it).toByteArray())
         }
     }
 
     override fun deleteMessage(messageId: String): Mono<Void> {
         return messageRepository.deleteById(messageId)
+            .then(messageRedisService.deleteMessage(messageId))
     }
 
     override fun editMessage(messageId: String, message: Message): Mono<Message> {
@@ -50,20 +55,12 @@ class MessageServiceImpl(
                     Message(
                         id = messageId,
                         text = message.text,
-                        datetime = LocalDateTime.now().toString()
+                        datetime = LocalDateTime.now().toString(),
+                        messageChatId = message.messageChatId,
+                        messageUserId = message.messageUserId
                     )
                 )
-            )
-
-//            .map {
-//                Message(
-//                    id = id,
-//                    text = message.text,
-//                    datetime = LocalDateTime.now().toString())
-//            }
-//            .flatMap(
-//                messageRepository::save
-//            )
+            ).flatMap { messageRedisService.editMessage(messageId, it) }
     }
 
     override fun findMessage(text: String): Flux<Message?> {

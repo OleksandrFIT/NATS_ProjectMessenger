@@ -16,18 +16,18 @@ class ChatController (
 
     @PostMapping("/chats-create")
     @ResponseStatus(HttpStatus.CREATED)
-    fun createChat(@RequestBody chat: Chat) {
-        chatService.createChat(chat)
+    fun createChat(@RequestBody chat: Chat): Mono<Chat> {
+       return chatService.createChat(chat)
     }
 
     @PutMapping("/chats-add/{chatId}/{id}")
-    fun addUserToTheChat(@PathVariable("chatId") chatId: String, @PathVariable("id") userId: String) {
-        chatService.addUserToTheChat(chatId, userId)
+    fun addUserToTheChat(@PathVariable("chatId") chatId: String, @PathVariable("id") userId: String): Mono<Chat> {
+        return chatService.addUserToTheChat(chatId, userId)
     }
 
     @DeleteMapping("/chats-delete/{id}")
-    fun delete(@PathVariable("id") id: String) {
-        chatService.deleteChat(id)
+    fun delete(@PathVariable("id") id: String): Mono<Void> {
+        return chatService.deleteChat(id)
     }
 
     @GetMapping("/chats-all")
@@ -37,8 +37,8 @@ class ChatController (
     }
 
     @PutMapping("/chats-remove/{chatId}/{id}")
-    fun deleteUserFromChat(@PathVariable("chatId") chatId: String, @PathVariable("id") userId: String){
-        chatService.deleteUserFromChat(chatId, userId)
+    fun deleteUserFromChat(@PathVariable("chatId") chatId: String, @PathVariable("id") userId: String): Mono<Chat>{
+       return chatService.deleteUserFromChat(chatId, userId)
     }
 
     @GetMapping("/get-chat-id/{id}")

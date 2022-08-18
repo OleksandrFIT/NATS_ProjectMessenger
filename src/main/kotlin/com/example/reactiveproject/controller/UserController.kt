@@ -2,6 +2,7 @@ package com.example.reactiveproject.controller
 
 import com.example.reactiveproject.model.User
 import com.example.reactiveproject.service.UserService
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import reactor.core.publisher.Mono
@@ -9,6 +10,7 @@ import reactor.core.publisher.Mono
 @RestController
 @RequestMapping("/user")
 open class UserController(
+//    @Qualifier("userRedisServiceImpl")
     val userService: UserService
 ) {
 
@@ -29,8 +31,8 @@ open class UserController(
 
     @PostMapping("/users-create")
     @ResponseStatus(HttpStatus.CREATED)
-    fun create(@RequestBody user: User) {
-        userService.createUser(user)
+    fun create(@RequestBody user: User): Mono<User> {
+        return userService.createUser(user)
     }
 
     @PutMapping("/users-update/{id}")
@@ -39,8 +41,8 @@ open class UserController(
     }
 
     @DeleteMapping("/users-delete/{id}")
-    fun delete(@PathVariable("id") id: String) {
-        userService.deleteUser(id)
+    fun delete(@PathVariable("id") id: String): Mono<Void> {
+        return userService.deleteUser(id)
     }
 
 }

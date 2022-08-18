@@ -8,6 +8,7 @@ import com.google.protobuf.Empty
 import com.google.protobuf.empty
 import org.lognet.springboot.grpc.GRpcService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 
@@ -15,6 +16,7 @@ import reactor.kotlin.core.publisher.toMono
 @GRpcService
 class GrpcUserService: ReactorUserServiceGrpc.UserServiceImplBase(){
     @Autowired
+//    @Qualifier("userRedisServiceImpl")
     lateinit var userService: UserService
 
     override fun findUserById(request: Mono<Services.id>?): Mono<Services.UserResponse> {

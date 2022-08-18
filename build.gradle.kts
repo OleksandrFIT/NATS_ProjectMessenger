@@ -49,6 +49,8 @@ dependencies {
     runtimeOnly("io.grpc:grpc-netty:1.47.0")
 
     implementation("io.nats:jnats:2.15.6")
+    implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive:2.7.2")
+    implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
 
 }
 

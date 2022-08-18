@@ -12,6 +12,7 @@ import com.google.protobuf.empty
 import io.nats.client.Connection
 import org.lognet.springboot.grpc.GRpcService
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Qualifier
 import reactor.core.publisher.Flux
 import reactor.core.publisher.FluxSink
 import reactor.core.publisher.Mono
@@ -19,6 +20,7 @@ import reactor.kotlin.core.publisher.toMono
 
 @GRpcService
 class GrpcMessageService: ReactorMessageServiceGrpc.MessageServiceImplBase(){
+//    @Qualifier("messageRedisServiceImpl")
     @Autowired
     lateinit var messageService: MessageService
 
