@@ -79,6 +79,6 @@ class GrpcChatService: ReactorChatServiceGrpc.ChatServiceImplBase() {
     override fun getChatById(request: Mono<Services.id>?): Mono<Services.FullChatResponse> {
         return idToGrpc(request!!)
             .flatMap { chatService.getChatById(it) }
-            .map { fullChatToGrpcMono(it) }
+            .map { fullChatToGrpcUnMono(it) }
     }
 }

@@ -1,9 +1,14 @@
 package com.example.reactiveproject.service.impl
 
+import com.example.reactiveproject.Services
 import com.example.reactiveproject.helper.chatToGrpc
+import com.example.reactiveproject.helper.fullChatToGrpcMono
+import com.example.reactiveproject.helper.fullChatToGrpcToNotMono
+import com.example.reactiveproject.helper.grpcToFullChatUnMono
 import com.example.reactiveproject.model.Chat
 import com.example.reactiveproject.model.FullChat
 import com.example.reactiveproject.model.User
+import com.example.reactiveproject.redisService.ChatRedisService
 import org.springframework.beans.factory.annotation.Autowired
 import com.example.reactiveproject.repository.ChatRepository
 import com.example.reactiveproject.repository.FullChatRepository
@@ -12,6 +17,7 @@ import com.example.reactiveproject.repository.UserRepository
 import com.example.reactiveproject.service.ChatService
 import io.nats.client.Connection
 import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException
+import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
@@ -28,15 +34,21 @@ class ChatServiceImpl(
 
     @Autowired
     lateinit var natsConnector: Connection
+    @Autowired
+    lateinit var chatRedisService: ChatRedisService
+    @Autowired
+    private lateinit var reactiveRedisTemplateFullChat: ReactiveRedisTemplate<String, Services.FullChatResponse>
+
 
     override fun createChat(chat: Chat): Mono<Chat>{
-        return chatRepository.save(chat).doOnSuccess {
+        return chatRepository.save(chat).flatMap { chatRedisService.createChat(it) }.doOnSuccess {
             natsConnector.publish("chat-event", chatToGrpc(it).toByteArray())
         }
     }
 
     override fun deleteChat(id: String): Mono<Void> {
         return chatRepository.deleteById(id)
+            .then(chatRedisService.deleteChat(id))
     }
 
     override fun addUserToTheChat(chatId: String, userId: String):Mono<Chat> {
@@ -56,10 +68,13 @@ class ChatServiceImpl(
                     messageIds = it.messageIds,
                     userIds = it.userIds!!.plus(userId) as HashSet
                 )
+
             }
             .flatMap {
                 chatRepository.save(it)
-            }
+            }.then(
+                chatRedisService.addUserToTheChat(chatId, userId)
+            )
             .toMono()
     }
 
@@ -85,6 +100,9 @@ class ChatServiceImpl(
             .flatMap {
                 chatRepository.save(it)
             }
+            .then(
+                chatRedisService.deleteUserFromChat(chatId, userId)
+            )
             .toMono()
     }
 
@@ -123,16 +141,17 @@ class ChatServiceImpl(
 
         return Mono.zip(chat, userF, messageF)
             .flatMap {
-                fullChatRepository.save(FullChat(
-                    chat = it.t1,
-                    userList = it.t2,
-                    messageList = it.t3
-                ))
+                fullChatRepository.save(
+                    FullChat(
+                        chat = it.t1,
+                        userList = it.t2,
+                        messageList = it.t3
+                    )
+                ).doOnSuccess {
+                    reactiveRedisTemplateFullChat.opsForValue()
+                        .set(chatId, fullChatToGrpcToNotMono(it.toMono()))
+                        .subscribe()
+                }
             }
-
-
-
+        }
     }
-
-
-}

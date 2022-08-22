@@ -5,9 +5,11 @@ import com.example.reactiveproject.Services.UserDescription
 import com.example.reactiveproject.model.Chat
 import com.example.reactiveproject.model.Message
 import com.example.reactiveproject.model.User
+import org.bson.types.ObjectId
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
 import java.time.LocalDateTime
+import java.util.Objects
 
 //for method find by userName
 fun userNameToGrpc(grpcId: Mono<Services.name>): Mono<String>{
@@ -126,14 +128,46 @@ fun grpcToUser(grpcUser: Mono<Services.UserDescription>): Mono<User> {
                 name = it!!.name,
                 phoneNumber = it.name,
                 bio = it.bio,
-                chat = it.chatList.map {
+                chat = it.chatList.map { it ->
                     grpcToChatUnMono(it)
                 },
-                message = it.messageList.map {
+                message = it.messageList.map { it ->
                     grpcToMessageUnMono(it)
                 }
             )
         }
+}
+fun grpcToUserUnMono(it: Services.UserDescription): User {
+
+    return User(
+            id = ObjectId.get().toString(),
+            name = it.name,
+            phoneNumber = it.name,
+            bio = it.bio,
+            chat = it.chatList.map {
+                grpcToChatUnMono(it)
+            },
+            message = it.messageList.map {
+                grpcToMessageUnMono(it)
+            }
+        )
+
+}
+fun grpcToUserMono(grpcUser: Mono<Services.UserResponse>): Mono<User>{
+    return grpcUser.map {
+        User(
+            id = it.id,
+            name = it.name,
+            phoneNumber = it.name,
+            bio = it.bio,
+            chat = it.chatList.map {
+                grpcToChatUnMono(it)
+            },
+            message = it.messageList.map {
+                grpcToMessageUnMono(it)
+            }
+        )
+    }
 }
 fun grpcResponseToUser(grpcUser: Mono<Services.UserResponse>): Mono<User> {
 

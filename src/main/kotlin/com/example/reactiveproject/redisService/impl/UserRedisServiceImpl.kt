@@ -23,7 +23,6 @@ import javax.annotation.PostConstruct
 
 
 @Service
-@Primary
 class UserRedisServiceImpl: UserRedisService
 {
     @Autowired
@@ -69,7 +68,8 @@ class UserRedisServiceImpl: UserRedisService
 
 
     override fun findByUserId(id: String): Mono<User?> {
-        return grpcResponseToUser(reactiveRedisTemplate.opsForValue().get(id)).doOnSuccess {
+        return grpcResponseToUser(reactiveRedisTemplate.opsForValue().get(id))
+            .doOnSuccess {
             logger
                 .info(String.format("User with ID: $id found"))
         }

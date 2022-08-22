@@ -14,12 +14,13 @@ import org.springframework.data.redis.core.ReactiveHashOperations
 import org.springframework.data.redis.core.ReactiveRedisTemplate
 import org.springframework.data.redis.core.ReactiveStringRedisTemplate
 import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import javax.annotation.PostConstruct
 
 
-@Component
+@Service
 class MessageRedisServiceImpl: MessageRedisService
 {
     @Autowired
@@ -51,7 +52,7 @@ class MessageRedisServiceImpl: MessageRedisService
             .delete(messageId)
             .then()
             .doOnSuccess {
-                logger.info(String.format("User with ID: $messageId is DELETED"))
+                logger.info(String.format("Message with ID: $messageId is DELETED"))
             }
     }
 

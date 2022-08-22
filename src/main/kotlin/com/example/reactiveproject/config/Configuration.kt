@@ -74,4 +74,18 @@ class Configuration {
 
         return ReactiveRedisTemplate(reactiveRedisConnectionFactory, context)
     }
+    @Bean
+    fun reactiveRedisTemplateChatFullChat(reactiveRedisConnectionFactory: ReactiveRedisConnectionFactory): ReactiveRedisTemplate<String, Services.FullChatResponse> {
+        val keySerializer: StringRedisSerializer = StringRedisSerializer()
+
+        val valueSerializer: ProtobufSerializer<Services.FullChatResponse> =
+            ProtobufSerializer(Services.FullChatResponse::class.java)
+
+        val builder: RedisSerializationContext.RedisSerializationContextBuilder<String, Services.FullChatResponse> =
+            RedisSerializationContext.newSerializationContext(keySerializer)
+
+        val context: RedisSerializationContext<String, Services.FullChatResponse> = builder.value(valueSerializer).build()
+
+        return ReactiveRedisTemplate(reactiveRedisConnectionFactory, context)
+    }
 }

@@ -24,7 +24,19 @@ fun grpcToChatUnMono(grpcChat: Services.ChatDescription): Chat {
 
     return grpcChat.let {
         Chat(
-            name = it!!.name,
+            name = it.name,
+            messageIds = it.messageIdsList,
+            userIds = it.userIdsList.toMutableSet(),
+        )
+    }
+}
+
+fun grpcToChatMono(grpcChat: Mono<Services.ChatResponse>): Mono<Chat> {
+
+    return grpcChat.map {
+        Chat(
+            id = it.id,
+            name = it.name,
             messageIds = it.messageIdsList,
             userIds = it.userIdsList.toMutableSet(),
         )
@@ -124,7 +136,7 @@ fun fullChatToGrpc(request: Mono<FullChat>): Mono<Services.FullChatResponse>{
             .build()
     }
 }
-fun fullChatToGrpcMono(it: FullChat): Services.FullChatResponse {
+fun fullChatToGrpcUnMono(it: FullChat): Services.FullChatResponse {
 
     return Services.FullChatResponse
             .newBuilder()
@@ -134,6 +146,52 @@ fun fullChatToGrpcMono(it: FullChat): Services.FullChatResponse {
                 addAllUserList(it.userList.map { userToGrpcDescription(it) })
             }
             .build()
+
+}
+
+fun fullChatToGrpcToNotMono(request: Mono<FullChat>): Services.FullChatResponse{
+
+    return request.block().let {
+        Services.FullChatResponse
+            .newBuilder()
+            .apply {
+                chat = chatToGrpcRequest(it!!.chat)
+                addAllMessageList(it.messageList.map { messageToGrpc(it) })
+                addAllUserList(it.userList.map { userToGrpcDescription(it) })
+            }
+            .build()
+    }
+
+}
+
+fun fullChatToGrpcMono(it: Mono<Services.FullChatResponse>): Mono<FullChat> {
+
+    return it.map {
+        FullChat(
+            chat = grpcToChatUnMono(it.chat),
+            userList = it.userListList.map {
+                grpcToUserUnMono(it)
+            },
+            messageList = it.messageListList.map {
+                grpcToMessageUnMono(it)
+            }
+        )
+    }
+
+}
+
+fun grpcToFullChatUnMono(it: Services.FullChatResponse): FullChat {
+
+    return FullChat(
+            chat = grpcToChatUnMono(it.chat),
+            userList = it.userListList.map {
+                grpcToUserUnMono(it)
+            },
+            messageList = it.messageListList.map {
+                grpcToMessageUnMono(it)
+            }
+        )
+
 
 }
 

@@ -3,6 +3,7 @@ package com.example.reactiveproject.helper
 import com.example.reactiveproject.Services
 import com.example.reactiveproject.model.Chat
 import com.example.reactiveproject.model.Message
+import org.bson.types.ObjectId
 import reactor.core.publisher.Flux
 import reactor.core.publisher.Mono
 import reactor.kotlin.core.publisher.toMono
@@ -37,6 +38,7 @@ fun grpcToMessage(message: Mono<Services.MessageDescription>): Mono<Message> {
 fun grpcToMessageUnMono(message: Services.MessageDescription): Message {
     return message.let {
         Message(
+            id =ObjectId.get().toString(),
             text = it.text,
             messageChatId = it.messageChatId,
             messageUserId = it.messageUserId
@@ -45,6 +47,16 @@ fun grpcToMessageUnMono(message: Services.MessageDescription): Message {
 }
 fun grpcToMessageUnMono(message: Services.MessageResponse): Message {
     return message.let {
+        Message(
+            id = it.id,
+            text = it.text,
+            messageChatId = it.messageChatId,
+            messageUserId = it.messageUserId
+        )
+    }
+}
+fun grpcResponseToMessageMono(message: Mono<Services.MessageResponse>): Mono<Message> {
+    return message.map {
         Message(
             id = it.id,
             text = it.text,
