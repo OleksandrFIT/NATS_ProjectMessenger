@@ -38,10 +38,11 @@ class MessageRedisServiceImpl: MessageRedisService
         reactiveHashOps = redisTemplate.opsForHash()
     }
 
-    override fun sendMessage(message: Message): Mono<Message> {
+    override fun sendMessage(message: Message?): Mono<Message> {
         return reactiveRedisTemplateMessage.opsForValue()
-            .set(message.id!!, messageToGrpcUnMono(message))
+            .set(message!!.id!!, messageToGrpcUnMono(message))
             .map { message }
+            .doOnError{it.printStackTrace()}
             .doOnSuccess {
                 logger.info(String.format("Message is CREATED. To find this message, use ID: ${message.id}"))
             }
@@ -58,11 +59,7 @@ class MessageRedisServiceImpl: MessageRedisService
 
     override fun editMessage(id: String, message: Message): Mono<Message> {
         return reactiveRedisTemplateMessage.opsForValue()
-            .getAndSet(id, messageToGrpcUnMono(message))
+            .getAndSet(message.id!!, messageToGrpcUnMono(message))
             .map { message }
-            .doOnSuccess {
-                logger
-                    .info(String.format("Message is UPDATED. To find updated message, use ID: ${message.id}"))
-            }
     }
 }

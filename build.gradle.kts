@@ -40,18 +40,20 @@ dependencies {
     implementation("io.github.lognet:grpc-spring-boot-starter:4.5.5")
     implementation("com.salesforce.servicelibs:reactor-grpc:1.2.3")
     implementation("com.salesforce.servicelibs:reactor-grpc-stub:1.2.3")
-    implementation("com.google.protobuf:protobuf-kotlin:3.21.3")
-    api("io.grpc:grpc-protobuf:1.47.0")
-    api("com.google.protobuf:protobuf-java-util:3.21.3")
-    api("com.google.protobuf:protobuf-kotlin:3.21.3")
-    api("io.grpc:grpc-kotlin-stub:1.3.0")
-    api("io.grpc:grpc-stub:1.47.0")
-    runtimeOnly("io.grpc:grpc-netty:1.47.0")
+//    implementation("com.google.protobuf:protobuf-kotlin:3.21.3")
+    api("io.grpc:grpc-protobuf:1.48.1")
+//    api("com.google.protobuf:protobuf-java-util:3.21.3")
+//    api("com.google.protobuf:protobuf-kotlin:3.21.3")
+//    api("io.grpc:grpc-kotlin-stub:1.3.0")
+    api("io.grpc:grpc-stub:1.48.1")
+//    runtimeOnly("io.grpc:grpc-netty:1.48.1")
 
     implementation("io.nats:jnats:2.15.6")
     implementation("org.springframework.boot:spring-boot-starter-data-redis-reactive:2.7.2")
     implementation("io.lettuce:lettuce-core:6.2.0.RELEASE")
 
+    testImplementation ("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation ("org.mockito:mockito-core:4.0.0")
 }
 
 tasks.test {
@@ -73,11 +75,11 @@ protobuf {
     }
     plugins {
         id("grpc") {
-            artifact = "io.grpc:protoc-gen-grpc-java:1.44.0"
+            artifact = "io.grpc:protoc-gen-grpc-java:1.48.1"
         }
-        id("grpckt") {
-            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.2.1:jdk7@jar"
-        }
+//        id("grpckt") {
+//            artifact = "io.grpc:protoc-gen-grpc-kotlin:1.2.1:jdk7@jar"
+//        }
         id("reactorGrpc") {
             // Download from the repository.
             artifact = "com.salesforce.servicelibs:reactor-grpc:1.2.3"
@@ -88,12 +90,12 @@ protobuf {
         all().forEach {
             it.plugins {
                 id("grpc")
-                id("grpckt")
+//                id("grpckt")
                 id("reactorGrpc")
             }
-            it.builtins {
-                id("kotlin")
-            }
+//            it.builtins {
+//                id("kotlin")
+//            }
         }
     }
 }

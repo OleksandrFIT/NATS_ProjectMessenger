@@ -66,7 +66,7 @@ class UserServiceImpl(
     override fun findByUserId(id: String): Mono<User?> {
         return userRedisService.findByUserId(id)
             .switchIfEmpty(
-                userRedisService.findByUserId(id)
+                userRepository.findById(id)
             )
     }
 }

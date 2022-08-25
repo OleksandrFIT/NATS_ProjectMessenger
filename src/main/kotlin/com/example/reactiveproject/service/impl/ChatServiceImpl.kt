@@ -41,7 +41,8 @@ class ChatServiceImpl(
 
 
     override fun createChat(chat: Chat): Mono<Chat>{
-        return chatRepository.save(chat).flatMap { chatRedisService.createChat(it) }.doOnSuccess {
+        return chatRepository.save(chat)
+            .flatMap { chatRedisService.createChat(it) }.doOnSuccess {
             natsConnector.publish("chat-event", chatToGrpc(it).toByteArray())
         }
     }
@@ -72,7 +73,8 @@ class ChatServiceImpl(
             }
             .flatMap {
                 chatRepository.save(it)
-            }.then(
+            }
+            .then(
                 chatRedisService.addUserToTheChat(chatId, userId)
             )
             .toMono()

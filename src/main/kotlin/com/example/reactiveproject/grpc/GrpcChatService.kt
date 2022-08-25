@@ -6,9 +6,7 @@ import com.example.reactiveproject.helper.*
 import com.example.reactiveproject.model.Chat
 import com.example.reactiveproject.repository.ChatRepository
 import com.example.reactiveproject.service.ChatService
-import com.google.gson.Gson
 import com.google.protobuf.Empty
-import com.google.protobuf.empty
 import io.nats.client.Connection
 import org.lognet.springboot.grpc.GRpcService
 import org.springframework.beans.factory.annotation.Autowired

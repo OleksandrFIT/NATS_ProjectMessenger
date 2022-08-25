@@ -7,8 +7,6 @@ import com.example.reactiveproject.model.Chat
 import com.example.reactiveproject.model.Message
 //import com.example.reactiveproject.helper.messageToGrpc
 import com.example.reactiveproject.service.MessageService
-import com.google.protobuf.Empty
-import com.google.protobuf.empty
 import io.nats.client.Connection
 import org.lognet.springboot.grpc.GRpcService
 import org.springframework.beans.factory.annotation.Autowired

@@ -6,7 +6,7 @@ import reactor.core.publisher.Mono
 
 interface MessageRedisService {
 
-    fun sendMessage(message: Message): Mono<Message>
+    fun sendMessage(message: Message?): Mono<Message>
 
     fun deleteMessage(messageId: String): Mono<Void>
 
