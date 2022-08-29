@@ -8,7 +8,7 @@ pipeline {
 
             stage('Gradle Build .jar') {steps {withGradle() {
             //sh 'sudo su'
-            sh './gradlew assemble --scan'}}
+            sh './gradlew assemble'}}
 
         }
     }
