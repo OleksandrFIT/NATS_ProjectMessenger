@@ -6,7 +6,8 @@ pipeline {
 
         stages {
 
-            stage('Gradle Build .jar') {steps {withGradle() {sh './gradlew assemble'}}
+            stage('Gradle Build .jar') {steps {withGradle() {
+            sh './gradlew assemble --debug'}}
 
         }
     }
