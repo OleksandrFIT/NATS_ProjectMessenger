@@ -43,18 +43,14 @@ class MessageRedisServiceImpl: MessageRedisService
             .set(message!!.id!!, messageToGrpcUnMono(message))
             .map { message }
             .doOnError{it.printStackTrace()}
-            .doOnSuccess {
-                logger.info(String.format("Message is CREATED. To find this message, use ID: ${message.id}"))
-            }
+
     }
 
     override fun deleteMessage(messageId: String): Mono<Void> {
         return redisTemplate.opsForValue()
             .delete(messageId)
             .then()
-            .doOnSuccess {
-                logger.info(String.format("Message with ID: $messageId is DELETED"))
-            }
+
     }
 
     override fun editMessage(id: String, message: Message): Mono<Message> {

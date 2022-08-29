@@ -46,16 +46,12 @@ class ChatRedisServiceImpl(val fullChatRepository: FullChatRepository): ChatRedi
 
     override fun createChat(chat: Chat): Mono<Chat> {
         return reactiveRedisTemplateChat.opsForValue().set(chat.id!!, chatToGrpc(chat)).map { chat }
-            .doOnSuccess {
-                logger.info(String.format("Chat is CREATED. To find this chat, use ID: ${chat.id}"))
-        }
+
     }
 
     override fun deleteChat(id: String): Mono<Void> {
         return redisTemplate.opsForValue().delete(id).then()
-            .doOnSuccess {
-                logger.info(String.format("Chat with ID: $id is DELETED"))
-            }
+
     }
 
     override fun addUserToTheChat(chatId: String, userId: String): Mono<Chat> {
