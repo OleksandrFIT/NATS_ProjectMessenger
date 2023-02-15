@@ -22,8 +22,8 @@ class GrpcChatService: ReactorChatServiceGrpc.ChatServiceImplBase() {
     @Autowired
     lateinit var chatService: ChatService
 
-//    @Autowired
-//    lateinit var chatRepository: ChatRepository
+    @Autowired
+    lateinit var chatRepository: ChatRepository
 
     @Autowired
     lateinit var natsConnection: Connection
@@ -39,9 +39,9 @@ class GrpcChatService: ReactorChatServiceGrpc.ChatServiceImplBase() {
                     .parseFrom(msg.data)
                 sink.next(grpcToChatUnMono(chat))
 
-//                chatRepository.findChatById(msg.data.toString()).map {
-//                    sink.next(it!!)
-//                }.subscribe()
+                chatRepository.findChatById(msg.data.toString()).map {
+                    sink.next(it!!)
+                }.subscribe()
             }
         }
 

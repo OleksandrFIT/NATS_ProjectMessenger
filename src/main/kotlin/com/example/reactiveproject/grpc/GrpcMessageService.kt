@@ -38,8 +38,6 @@ class GrpcMessageService: ReactorMessageServiceGrpc.MessageServiceImplBase(){
         return Flux.merge(messageService.findMessage(textToGrpcUnMono(request!!)), fluxSink).map {
             messageToGrpcUnMono(it!!)
         }
-//        return textToGrpc(request!!)
-//            .flatMapMany { messageToGrpc(messageService.findMessage(it)) }
     }
 
     override fun sendMessage(request: Mono<Services.MessageDescription>?): Mono<Services.MessageResponse> {
